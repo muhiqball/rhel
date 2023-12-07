@@ -7,7 +7,10 @@ mkdir /data
 mount /dev/vgdata/lv_data /data
 
 #Extend Lvm existing disk (package cloud-guest-utils)
-growpart /dev/sdb 2
+#growpart /dev/sdb 2
+#parted /dev/sdb
+p
+resizepart 2 100%
 pvresize /dev/sdb2
 pvs
 
@@ -18,7 +21,7 @@ lvextend /dev/vgdata/lv_data /dev/sdc
 #lvextend -l +100%FREE /dev/vgdata/lv_data
 #lvextend -L +2G /dev/vgdata/lv_data
 xfs_growfs /dev/vgdata/lv_data
-
+#resize2fs /dev/vgdata/lv_data
 
 #Swap Increase add lvcreate or parted using parted or fdisk
 lvcreate -L 1G -n swap2 vg_rhel
