@@ -1,0 +1,35 @@
+#Create fs lvm
+pvcreate /dev/sdb
+vgcreate vgdata /dev/sdb
+lvcreate -l +100%FREE -n lv_data vgdata
+mkfs.xfs /dev/vgdata/lv_data
+mkdir /data
+mount /dev/vgdata/lv_data /data
+
+#Extend Lvm existing disk (package cloud-guest-utils)
+growpart /dev/sdb 2
+pvresize /dev/sdb2
+pvs
+
+
+#Extend Lvm new disk
+vgextend vgdata /dev/sdc
+lvextend /dev/vgdata/lv_data /dev/sdc
+#lvextend -l +100%FREE /dev/vgdata/lv_data
+#lvextend -L +2G /dev/vgdata/lv_data
+xfs_growfs /dev/vgdata/lv_data
+
+
+#Swap Increase add lvcreate or parted using parted or fdisk
+lvcreate -L 1G -n swap2 vg_rhel
+mkswap /dev/vg_rhel/swap2
+swapon /dev/vg_rhel/swap2
+save to fstab
+
+
+#Take off swap
+swapoff /dev/rhel/swap2
+lvremove /dev/rhel/swap2
+#lvreduce /dev/rhel/swap -L 2G (if 1 VG)
+vgreduce /dev/rhel /dev/sde # take off
+#swapon /dev/rhel/swap
